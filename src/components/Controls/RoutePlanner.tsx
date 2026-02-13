@@ -36,7 +36,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
         { key: 'safety', label: '安全 (街灯)', icon: <Zap className="w-4 h-4" />, color: 'blue' },
         { key: 'quiet', label: '静か (交通量少)', icon: <VolumeX className="w-4 h-4" />, color: 'blue' },
         { key: 'fewLights', label: '信号少なめ', icon: <Octagon className="w-4 h-4" />, color: 'blue' },
-        { key: 'flat', label: '平坦 (水辺)', icon: <Activity className="w-4 h-4" />, color: 'blue' },
+        { key: 'flat', label: '平坦', icon: <Activity className="w-4 h-4" />, color: 'blue' },
         { key: 'minimizeTurns', label: '曲がり角少なめ', icon: <CornerUpRight className="w-4 h-4" />, color: 'blue' },
     ];
 
@@ -194,14 +194,20 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                     onChange={(e) => onChange({ ...requests, avoidRepetition: e.target.checked })}
                                     className="hidden"
                                 />
-                                <span className="text-xs text-gray-600 font-medium">同じ道を通らない (周回ルート優先)</span>
+                                <span className="text-xs text-gray-600 font-medium">できるだけ同じ道を通らない</span>
                             </label>
                         </div>
                     </div>
 
+                    <div className="mt-4 mb-2">
+                        <p className="text-[10px] text-gray-400 text-center">
+                            ※条件を増やしすぎると、希望の目標距離にならない場合があります
+                        </p>
+                    </div>
+
                     <button
                         onClick={() => {
-                            setIsOpen(false); // Auto close on mobile generate
+                            setIsOpen(false);
                             onGenerate();
                         }}
                         disabled={isLoading}

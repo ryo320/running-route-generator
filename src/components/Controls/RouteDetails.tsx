@@ -102,7 +102,7 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
                 Google Mapsで開く
             </button>
             <p className="text-xs text-center text-gray-400 mt-2">
-                注意: Google Maps側でルートが再計算される場合があります。
+                ※ Google Maps側でルートが再計算される場合があります。
             </p>
         </div>
     );

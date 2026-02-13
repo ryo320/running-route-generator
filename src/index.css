@@ -4,6 +4,24 @@
     filter: hue-rotate(150deg);
 }
 
+html,
 body {
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    overscroll-behavior-x: none;
+}
+
+@keyframes ground-flow {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-ground-flow {
+    animation: ground-flow 0.4s infinite linear;
 }
