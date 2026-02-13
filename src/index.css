@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.hue-change {
+    filter: hue-rotate(150deg);
+}
+
+body {
+    overflow-x: hidden;
+}
