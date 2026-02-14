@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ryo320.github.io/running-route-generator/sitemap.xml
