@@ -50,7 +50,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                 <button
                     onClick={() => onOpenChange(!isOpen)}
                     className={`
-                        md:hidden fixed right-6 z-[1000] w-14 h-14 bg-blue-600 rounded-full shadow-xl flex items-center justify-center text-white active:scale-90 transition-all duration-300
+                        md:hidden fixed right-6 z-[1100] w-14 h-14 bg-blue-600 rounded-full shadow-xl flex items-center justify-center text-white active:scale-90 transition-all duration-300
                         bottom-6
                     `}
                 >
@@ -67,7 +67,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                 md:w-full md:rounded-3xl md:p-6 md:relative md:transform-none md:opacity-100
                 
                 /* Mobile Sizing (Bottom Sheet) */
-                fixed bottom-0 left-0 w-full z-[900] rounded-t-3xl p-6
+                fixed bottom-0 left-0 w-full z-[1000] rounded-t-3xl p-6
                 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 md:translate-y-0 md:opacity-100'}
             `}>
                 {/* Mobile Drag Handle */}

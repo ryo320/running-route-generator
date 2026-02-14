@@ -159,7 +159,7 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
                                 e.stopPropagation(); // Prevent drag/map issues
                                 onOpenSettings();
                             }}
-                            className="w-10 h-10 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white active:scale-90 transition-all md:hidden z-50"
+                            className="w-14 h-14 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-white active:scale-90 transition-all md:hidden z-50 shrink-0"
                         >
                             <Settings className="w-5 h-5" />
                         </button>
