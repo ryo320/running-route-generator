@@ -22,47 +22,55 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
     const [dragOffset, setDragOffset] = useState(0);
     const [sheetHeight, setSheetHeight] = useState(0);
 
+    // Check if distance error is significant (> 1km or > 15%)
+    const isApproximate = targetDistance
+        ? Math.abs(route.distance - targetDistance) > Math.max(1.0, targetDistance * 0.15)
+        : false;
+
     const sheetRef = useRef<HTMLDivElement>(null);
     const startY = useRef<number | null>(null);
     const isDragging = useRef(false);
 
-    // Peek height: How much is visible when collapsed (handle + title + stats)
-    // Approx 160px for Summary + Handle
-    const PEEK_HEIGHT_PX = 160;
+    const [peekHeight, setPeekHeight] = useState(160); // Default, updated by ref
+    const headerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (sheetRef.current) {
             setSheetHeight(sheetRef.current.offsetHeight);
         }
-    }, [route]); // Recalculate when route changes
+        if (headerRef.current) {
+            // Add some padding/margin to the measured height if needed
+            setPeekHeight(headerRef.current.offsetHeight + 10);
+        }
+    }, [route, isApproximate]);
 
     const handleTouchStart = (e: React.TouchEvent) => {
+        e.stopPropagation();
+        // e.preventDefault(); // Warning: React might complain about passive events if not careful, but usually okay in handler if simple.
         isDragging.current = true;
         startY.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
+        e.stopPropagation();
+        // e.preventDefault() is often needed to stop scrolling, but in React 18+ passive is default.
+        // We rely on CSS touch-action: none for the handle.
         if (!isDragging.current || startY.current === null) return;
         const deltaY = e.touches[0].clientY - startY.current;
         setDragOffset(deltaY);
     };
 
-    const handleTouchEnd = () => {
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        e.stopPropagation();
         isDragging.current = false;
         if (startY.current === null) return;
 
         const threshold = 50;
 
         if (isExpanded) {
-            // Dragged down significantly?
-            if (dragOffset > threshold) {
-                setIsExpanded(false);
-            }
+            if (dragOffset > threshold) setIsExpanded(false);
         } else {
-            // Dragged up significantly?
-            if (dragOffset < -threshold) {
-                setIsExpanded(true);
-            }
+            if (dragOffset < -threshold) setIsExpanded(true);
         }
 
         setDragOffset(0);
@@ -70,19 +78,12 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
     };
 
     // Calculate Transform
-    // Expanded: 0 (fully visible)
-    // Collapsed: height - peek (pushed down)
-    const collapsedTranslate = Math.max(0, sheetHeight - PEEK_HEIGHT_PX);
+    const collapsedTranslate = Math.max(0, sheetHeight - peekHeight);
 
     const currentTranslate = isExpanded ? 0 : collapsedTranslate;
-    const totalTranslate = Math.max(0, currentTranslate + dragOffset); // Prevent dragging too high up
+    const totalTranslate = Math.max(0, currentTranslate + dragOffset);
 
     // --- End Swipe Logic ---
-
-    // Check if distance error is significant (> 1km or > 15%)
-    const isApproximate = targetDistance
-        ? Math.abs(route.distance - targetDistance) > Math.max(1.0, targetDistance * 0.15)
-        : false;
 
     const handleExportGoogleMaps = () => {
         if (!route.coordinates || route.coordinates.length < 2) return;
@@ -130,51 +131,54 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
                 transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
         >
-            {/* Handle Bar Area - Touch Target */}
-            <div
-                className="md:hidden w-full h-8 -mt-6 mb-2 flex items-center justify-center cursor-grab active:cursor-grabbing"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-            >
-                <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-            </div>
-
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-blue-600" />
-                ルート詳細
-            </h3>
-
-            {isApproximate && (
-                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
-                    <p className="font-bold mb-1">⚠️ 距離が一致しませんでした</p>
-                    <p>
-                        生成ルート ({route.distance.toFixed(1)}km) が目標 ({targetDistance}km) と異なります。
-                        条件が厳しすぎる可能性があります。
-                    </p>
+            {/* Header Section (Visible when collapsed) */}
+            <div ref={headerRef}>
+                {/* Handle Bar Area */}
+                <div
+                    className="md:hidden w-full h-8 -mt-6 mb-2 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
                 </div>
-            )}
 
-            {/* Re-roll Options */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
-                {onRetrySameSettings && (
-                    <button
-                        onClick={onRetrySameSettings}
-                        className="flex items-center justify-center gap-1 py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg transition-colors border border-gray-200 whitespace-nowrap"
-                    >
-                        <RefreshCw className="w-3 h-3 flex-shrink-0" />
-                        同じ条件で再検索
-                    </button>
+                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-blue-600" />
+                    ルート詳細
+                </h3>
+
+                {isApproximate && (
+                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
+                        <p className="font-bold mb-1">⚠️ 距離が一致しませんでした</p>
+                        <p>
+                            生成ルート ({route.distance.toFixed(1)}km) が目標 ({targetDistance}km) と異なります。
+                            条件が厳しすぎる可能性があります。
+                        </p>
+                    </div>
                 )}
-                {onRetrySameDistance && (
-                    <button
-                        onClick={onRetrySameDistance}
-                        className="flex items-center justify-center gap-1 py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg transition-colors border border-gray-200 whitespace-nowrap"
-                    >
-                        <RefreshCw className="w-3 h-3 flex-shrink-0" />
-                        距離固定で再検索
-                    </button>
-                )}
+
+                {/* Re-roll Options */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                    {onRetrySameSettings && (
+                        <button
+                            onClick={onRetrySameSettings}
+                            className="flex items-center justify-center gap-1 py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg transition-colors border border-gray-200 whitespace-nowrap"
+                        >
+                            <RefreshCw className="w-3 h-3 flex-shrink-0" />
+                            同じ条件で再検索
+                        </button>
+                    )}
+                    {onRetrySameDistance && (
+                        <button
+                            onClick={onRetrySameDistance}
+                            className="flex items-center justify-center gap-1 py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg transition-colors border border-gray-200 whitespace-nowrap"
+                        >
+                            <RefreshCw className="w-3 h-3 flex-shrink-0" />
+                            距離固定で再検索
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="flex justify-between items-center mb-6 p-4 bg-gray-50 rounded-xl">
