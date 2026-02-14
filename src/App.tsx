@@ -441,6 +441,8 @@ function App() {
     handleGenerateRoute(newRequest);
   };
 
+  const [isSettingsOpen, setIsSettingsOpen] = useState(true);
+
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Map Background */}
@@ -475,6 +477,9 @@ function App() {
           isLoading={isLoading}
           hasDestination={!!destinationLocation}
           onToggleDestination={handleToggleDestination}
+          hasRoute={!!generatedRoute}
+          isOpen={isSettingsOpen}
+          onOpenChange={setIsSettingsOpen}
         />
       </div>
 
@@ -484,6 +489,7 @@ function App() {
           targetDistance={routeRequest.distance}
           onRetrySameSettings={handleRetrySameSettings}
           onRetrySameDistance={handleRetrySameDistance}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Settings, Map as MapIcon, RotateCw, Navigation, ChevronDown, Trees, Building2, Zap, VolumeX, Octagon, Activity, CornerUpRight, MapPin } from 'lucide-react';
 import type { RouteRequest } from '../../types';
 
@@ -9,10 +9,13 @@ interface RoutePlannerProps {
     isLoading: boolean;
     hasDestination: boolean;
     onToggleDestination: (enabled: boolean) => void;
+    hasRoute?: boolean;
+    isOpen: boolean;
+    onOpenChange: (isOpen: boolean) => void;
 }
 
-const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGenerate, isLoading, hasDestination, onToggleDestination }) => {
-    const [isOpen, setIsOpen] = useState(true);
+const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGenerate, isLoading, hasDestination, onToggleDestination, hasRoute, isOpen, onOpenChange }) => {
+
 
     const handleDistanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let val = parseFloat(e.target.value);
@@ -42,13 +45,18 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
 
     return (
         <>
-            {/* Mobile Toggle Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden fixed bottom-6 right-6 z-[1000] w-14 h-14 bg-blue-600 rounded-full shadow-xl flex items-center justify-center text-white active:scale-90 transition-transform"
-            >
-                {isOpen ? <ChevronDown /> : <Settings />}
-            </button>
+            {/* Mobile Toggle Button - Hidden if Route exists (handled by RouteDetails) */}
+            {!hasRoute && (
+                <button
+                    onClick={() => onOpenChange(!isOpen)}
+                    className={`
+                        md:hidden fixed right-6 z-[1000] w-14 h-14 bg-blue-600 rounded-full shadow-xl flex items-center justify-center text-white active:scale-90 transition-all duration-300
+                        bottom-6
+                    `}
+                >
+                    {isOpen ? <ChevronDown /> : <Settings />}
+                </button>
+            )}
 
             {/* Main Panel */}
             <div className={`
@@ -63,7 +71,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 md:translate-y-0 md:opacity-100'}
             `}>
                 {/* Mobile Drag Handle */}
-                <div className="md:hidden w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" onClick={() => setIsOpen(false)} />
+                <div className="md:hidden w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" onClick={() => onOpenChange(false)} />
 
                 <div className="flex items-center gap-3 mb-6 border-b border-gray-200/50 pb-4">
                     <div className="p-2 bg-blue-100 rounded-lg">
@@ -121,7 +129,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                 スタート地点に戻る
                             </button>
                             <button
-                                onClick={() => onChange({ ...requests, type: 'one-way' })}
+                                onClick={() => { onChange({ ...requests, type: 'one-way' }); onOpenChange(true); }}
                                 className={`py-3 px-4 rounded-xl text-sm font-bold transition-all border-2 ${requests.type === 'one-way'
                                     ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
                                     : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -219,7 +227,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
 
                     <button
                         onClick={() => {
-                            setIsOpen(false);
+                            onOpenChange(false);
                             onGenerate();
                         }}
                         disabled={isLoading}
