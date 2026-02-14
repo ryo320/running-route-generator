@@ -49,7 +49,15 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
     };
 
     return (
-        <div className="bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-2xl w-full max-w-sm border border-white/20 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className={`
+            bg-white/95 backdrop-blur-md p-6 shadow-2xl border border-white/20 animate-in fade-in slide-in-from-bottom-4 duration-500
+            
+            /* Desktop: Relative card in top-left */
+            md:relative md:w-full md:max-w-sm md:rounded-2xl md:mt-4
+            
+            /* Mobile: Fixed bottom sheet */
+            fixed bottom-0 left-0 w-full z-[800] rounded-t-3xl max-h-[80vh] overflow-y-auto
+        `}>
             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-blue-600" />
                 ルート詳細
