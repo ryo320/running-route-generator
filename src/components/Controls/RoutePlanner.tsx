@@ -69,8 +69,8 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                 /* Desktop Sizing */
                 md:w-full md:rounded-3xl md:p-6 md:relative md:transform-none md:opacity-100
                 
-                /* Mobile Sizing (Bottom Sheet) */
-                fixed bottom-0 left-0 w-full z-[1000] rounded-t-3xl p-6
+                /* Mobile Sizing (Full Screen) */
+                fixed inset-0 w-full h-full z-[1000] p-6 pt-12
                 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 md:translate-y-0 md:opacity-100'}
             `}>
                 <div className="flex items-center justify-between mb-6 border-b border-gray-200/50 pb-4">
