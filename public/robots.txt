@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ryo320.github.io/running-route-generator/sitemap.xml
+Sitemap: https://running-runroute.vercel.app/sitemap.xml

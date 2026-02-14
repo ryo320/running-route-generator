@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
     // サイトマップの設定を追加
     Sitemap({
-      hostname: 'https://runroute.vercel.app', // あなたのVercelのURLに変更してください
+      hostname: 'https://running-runroute.vercel.app', // あなたのVercelのURLに変更してください
       dynamicRoutes: ['/'], // 現時点ではトップページのみでOK
     }),
   ],
