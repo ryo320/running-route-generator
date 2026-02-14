@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Map as MapIcon, RotateCw, Navigation, ChevronDown, Trees, Building2, Zap, VolumeX, Octagon, Activity, CornerUpRight, MapPin } from 'lucide-react';
+import { Settings, Map as MapIcon, RotateCw, Navigation, ChevronDown, Trees, Building2, Zap, VolumeX, Octagon, Activity, CornerUpRight } from 'lucide-react';
 import type { RouteRequest } from '../../types';
 
 interface RoutePlannerProps {
@@ -86,7 +86,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
 
 
                     {/* Distance Slider */}
-                    <div>
+                    <div className="px-2">
                         <div className="flex justify-between items-end mb-4">
                             <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
                                 <Navigation className="w-4 h-4 text-blue-500" />

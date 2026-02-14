@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Navigation as NavIcon, Settings, Crosshair } from 'lucide-react';
 
 import MapView from './components/Map/MapView';
 import RoutePlanner from './components/Controls/RoutePlanner';
