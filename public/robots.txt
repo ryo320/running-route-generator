@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://running-runroute.vercel.app/sitemap.xml
+Sitemap: https://runanyway.vercel.app/sitemap.xml

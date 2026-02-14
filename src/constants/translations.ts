@@ -2,9 +2,9 @@ export type Language = 'ja' | 'en';
 
 export const translations = {
     ja: {
-        appTitle: 'RunRoute',
-        appSubtitle: '(ランルー)',
-        metaDescription: '「いつも同じ道ばかり走っている」「どこを走ればいいかわからない」そんなランナーへ。RunRouteは希望の距離と場所を指定するだけで、最適なランニングコースを自動生成します。未知なる道へ、走り出しましょう。',
+        appTitle: 'RunAnyWay',
+        appSubtitle: '',
+        metaDescription: '「いつも同じ道ばかり走っている」「どこを走ればいいかわからない」そんなランナーへ。RunAnyWayは希望の距離と場所を指定するだけで、最適なランニングコースを自動生成します。未知なる道へ、走り出しましょう。',
 
         // RoutePlanner
         targetDistance: '目標距離',
@@ -56,9 +56,9 @@ export const translations = {
         dragStartPin: '青いピンを動かしてスタート地点を変更できます',
     },
     en: {
-        appTitle: 'RunRoute',
+        appTitle: 'RunAnyWay',
         appSubtitle: '',
-        metaDescription: 'Bored of the same route? Don\'t know where to run? RunRoute generates optimal running paths based on your distance and location preferences. Discover unknown paths.',
+        metaDescription: 'Bored of the same route? Don\'t know where to run? RunAnyWay generates optimal running paths based on your distance and location preferences. Discover unknown paths.',
 
         // RoutePlanner
         targetDistance: 'Target Distance',

@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://ryo320.github.io/running-route-generator/",
+  "homepage": "https://runanyway.vercel.app/",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc -b && vite build",
