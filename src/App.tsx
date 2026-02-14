@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MapPin } from 'lucide-react';
+
 import MapView from './components/Map/MapView';
 import RoutePlanner from './components/Controls/RoutePlanner';
 import type { RouteRequest, Coordinates, Route } from './types';
@@ -453,16 +453,6 @@ function App() {
           onStartDragEnd={handleStartDragEnd}
           onDestinationDragEnd={handleDestinationDragEnd}
         />
-        {/* Helper Text Overlay */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[400] bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-gray-200 pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <p className="text-xs md:text-sm font-medium text-gray-700 flex items-center gap-2 whitespace-nowrap">
-            <span className="flex gap-0.5">
-              <MapPin className="w-5 h-5 text-blue-600 fill-blue-600/20" />
-              <MapPin className="w-5 h-5 text-red-500 fill-red-500/20" />
-            </span>
-            ピンをドラッグしてスタート・ゴール地点を調整できます
-          </p>
-        </div>
 
         {/* Loading Overlay */}
         {isLoading && <LoadingOverlay message="最適なランニングルートを探しています..." />}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Map as MapIcon, RotateCw, Navigation, ChevronDown, Trees, Building2, Zap, VolumeX, Octagon, Activity, CornerUpRight } from 'lucide-react';
+import { Settings, Map as MapIcon, RotateCw, Navigation, ChevronDown, Trees, Building2, Zap, VolumeX, Octagon, Activity, CornerUpRight, MapPin } from 'lucide-react';
 import type { RouteRequest } from '../../types';
 
 interface RoutePlannerProps {
@@ -74,7 +74,9 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                     </h1>
                 </div>
 
-                <div className="space-y-8 max-h-[70vh] md:max-h-none overflow-y-auto scrollbar-hide pb-20 md:pb-0">
+                <div className="space-y-8 max-h-[70vh] md:max-h-none overflow-y-auto scrollbar-hide pb-20 md:pb-0 relative">
+
+
                     {/* Distance Slider */}
                     <div>
                         <div className="flex justify-between items-end mb-4">
@@ -129,6 +131,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                             </button>
                         </div>
 
+
                         {/* Destination Toggle */}
                         <div className={`overflow-hidden transition-all duration-300 ${requests.type === 'one-way' ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
                             <label className="flex items-center gap-3 p-3 bg-white/50 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-50 transition-colors">
@@ -144,7 +147,16 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                 <span className={`text-sm font-bold ${hasDestination ? 'text-blue-700' : 'text-gray-500'}`}>目的地を指定する</span>
                             </label>
                         </div>
+                        {/* Pin Hint */}
+                        <div className="flex items-center justify-center gap-1 mt-1 mb-1 text-xs text-gray-400">
+                            <div className="flex gap-0.5">
+                                <MapPin className="w-3 h-3 text-blue-500" />
+                                <MapPin className="w-3 h-3 text-red-500" />
+                            </div>
+                            <span>ピンをドラッグして地点を調整できます</span>
+                        </div>
                     </div>
+
 
                     {/* Preferences */}
                     <div>
@@ -226,9 +238,8 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                         )}
                     </button>
 
-                    <div className="h-4 md:hidden" /> {/* Spacer for bottom safe area */}
                 </div>
-            </div>
+            </div >
         </>
     );
 };
