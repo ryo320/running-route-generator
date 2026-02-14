@@ -45,8 +45,8 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
 
     return (
         <>
-            {/* Mobile Toggle Button - Hidden if Route exists (handled by RouteDetails) */}
-            {!hasRoute && (
+            {/* Mobile Toggle Button - Hidden if Route exists (handled by RouteDetails) UNLESS open (Close button) */}
+            {(isOpen || !hasRoute) && (
                 <button
                     onClick={() => onOpenChange(!isOpen)}
                     className={`
