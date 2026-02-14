@@ -83,7 +83,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                 目標距離
                             </label>
                             <span className="text-3xl font-black text-blue-600 tracking-tight">
-                                {requests.distance}
+                                {requests.distance.toFixed(1)}
                                 <span className="text-sm text-gray-400 font-medium ml-1">km</span>
                             </span>
                         </div>
@@ -97,8 +97,8 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                             className="w-full h-3 bg-gray-200 rounded-full appearance-none cursor-pointer accent-blue-600 hover:accent-blue-700 active:accent-blue-800 transition-all touch-none"
                         />
                         <div className="flex justify-between text-xs text-gray-400 mt-2 font-medium px-1">
-                            <span>1km</span>
-                            <span>42.195km</span>
+                            <span>1.0 km</span>
+                            <span>42.195 km</span>
                         </div>
                     </div>
 
