@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Route } from '../../types';
 import { Navigation, TrendingUp, RefreshCw, Download } from 'lucide-react';
 import { detectTurnPoints } from '../../utils/geoUtils';
@@ -19,45 +19,63 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
 }) => {
     // --- Swipeable Bottom Sheet Logic ---
     const [isExpanded, setIsExpanded] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
+    const [sheetHeight, setSheetHeight] = useState(0);
+
+    const sheetRef = useRef<HTMLDivElement>(null);
     const startY = useRef<number | null>(null);
-    const currentY = useRef<number>(0);
+    const isDragging = useRef(false);
+
+    // Peek height: How much is visible when collapsed (handle + title + stats)
+    // Approx 160px for Summary + Handle
+    const PEEK_HEIGHT_PX = 160;
+
+    useEffect(() => {
+        if (sheetRef.current) {
+            setSheetHeight(sheetRef.current.offsetHeight);
+        }
+    }, [route]); // Recalculate when route changes
 
     const handleTouchStart = (e: React.TouchEvent) => {
+        isDragging.current = true;
         startY.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        if (startY.current === null) return;
+        if (!isDragging.current || startY.current === null) return;
         const deltaY = e.touches[0].clientY - startY.current;
-        currentY.current = deltaY;
-
-        // Limit drag range
-        // If expanded (at 0), deltaY > 0 means dragging down (positive)
-        // If collapsed (at high Y), deltaY < 0 means dragging up (negative)
-
-        // Simple drag visualization
+        setDragOffset(deltaY);
     };
 
     const handleTouchEnd = () => {
+        isDragging.current = false;
         if (startY.current === null) return;
 
-        const threshold = 100; // Drag threshold to trigger state change
+        const threshold = 50;
 
         if (isExpanded) {
-            // If dragging down significantly, collapse
-            if (currentY.current > threshold) {
+            // Dragged down significantly?
+            if (dragOffset > threshold) {
                 setIsExpanded(false);
             }
         } else {
-            // If dragging up significantly, expand
-            if (currentY.current < -threshold) {
+            // Dragged up significantly?
+            if (dragOffset < -threshold) {
                 setIsExpanded(true);
             }
         }
 
+        setDragOffset(0);
         startY.current = null;
-        currentY.current = 0;
     };
+
+    // Calculate Transform
+    // Expanded: 0 (fully visible)
+    // Collapsed: height - peek (pushed down)
+    const collapsedTranslate = Math.max(0, sheetHeight - PEEK_HEIGHT_PX);
+
+    const currentTranslate = isExpanded ? 0 : collapsedTranslate;
+    const totalTranslate = Math.max(0, currentTranslate + dragOffset); // Prevent dragging too high up
 
     // --- End Swipe Logic ---
 
@@ -93,28 +111,34 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
 
     return (
         <div
+            ref={sheetRef}
             className={`
                 bg-white/95 backdrop-blur-md p-6 shadow-2xl border border-white/20 
-                transition-transform duration-300 ease-out
                 
                 /* Desktop: Absolute card in top-right */
                 md:absolute md:top-8 md:right-8 md:w-80 md:rounded-2xl md:transform-none md:inset-auto md:h-auto md:max-h-none md:overflow-visible
                 
-                /* Mobile: Fixed bottom sheet */
-                fixed bottom-0 left-0 w-full z-[800] rounded-t-3xl overflow-y-auto
-                
-                /* Mobile State Styles */
-                ${isExpanded
-                    ? 'h-[85vh] translate-y-0'
-                    : 'h-[25vh] translate-y-0' // Collapsed height
-                }
+                /* Mobile: Fixed bottom sheet, AUTO height */
+                fixed bottom-0 left-0 w-full z-[800] rounded-t-3xl overflow-hidden h-auto
             `}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            style={{
+                // Desktop: reset transform
+                // Mobile: calculate transform
+                transform: window.innerWidth >= 768
+                    ? 'none'
+                    : `translateY(${totalTranslate}px)`,
+                transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+            }}
         >
-            {/* Handle Bar */}
-            <div className="md:hidden w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4" />
+            {/* Handle Bar Area - Touch Target */}
+            <div
+                className="md:hidden w-full h-8 -mt-6 mb-2 flex items-center justify-center cursor-grab active:cursor-grabbing"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+            </div>
 
             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-blue-600" />
