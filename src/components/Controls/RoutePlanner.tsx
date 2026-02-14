@@ -45,8 +45,8 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
 
     return (
         <>
-            {/* Mobile Toggle Button - Hidden if Route exists (handled by RouteDetails) UNLESS open (Close button) */}
-            {(isOpen || !hasRoute) && (
+            {/* Mobile Toggle Button - Hidden if Route exists (handled by RouteDetails) UNLESS open (Close button). ALSO hidden if loading. */}
+            {(isOpen || !hasRoute) && !isLoading && (
                 <button
                     onClick={() => onOpenChange(!isOpen)}
                     className={`
@@ -99,12 +99,16 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                         </div>
                         <input
                             type="range"
-                            min="1"
+                            min="1.0"
                             max="42"
                             step="0.5"
-                            value={requests.distance}
+                            value={requests.distance === 42.195 ? 42 : requests.distance}
                             onChange={handleDistanceChange}
-                            className="w-full h-3 bg-gray-200 rounded-full appearance-none cursor-pointer accent-blue-600 hover:accent-blue-700 active:accent-blue-800 transition-all touch-none"
+                            disabled={isLoading}
+                            style={{
+                                background: `linear-gradient(to right, #3b82f6 0%, #4f46e5 ${((requests.distance === 42.195 ? 42 : requests.distance) - 1) / (42 - 1) * 100}%, #e5e7eb ${((requests.distance === 42.195 ? 42 : requests.distance) - 1) / (42 - 1) * 100}%, #e5e7eb 100%)`
+                            }}
+                            className={`w-full h-3 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 active:scale-[1.01] transition-transform touch-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         />
                         <div className="flex justify-between text-xs text-gray-400 mt-2 font-medium px-1">
                             <span>1.0 km</span>
@@ -112,111 +116,107 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                         </div>
                     </div>
 
-                    {/* Route Type */}
-                    <div>
-                        <label className="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2">
-                            <RotateCw className="w-4 h-4 text-blue-500" />
+                    {/* Route Type Selection */}
+                    <div className="mb-8">
+                        <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                            <Navigation className="w-4 h-4 text-blue-500" />
                             ルートタイプ
                         </label>
-                        <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div className="grid grid-cols-2 gap-3">
                             <button
                                 onClick={() => onChange({ ...requests, type: 'loop' })}
-                                className={`py-3 px-4 rounded-xl text-sm font-bold transition-all border-2 whitespace-nowrap ${requests.type === 'loop'
+                                disabled={isLoading}
+                                className={`py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 ${requests.type === 'loop'
                                     ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
                                     : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'
-                                    }`}
+                                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                スタート地点に戻る
+                                <div className="flex flex-col items-center gap-1 whitespace-nowrap">
+                                    <RotateCw className={`w-5 h-5 ${requests.type === 'loop' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                    スタート地点に戻る
+                                </div>
                             </button>
                             <button
                                 onClick={() => { onChange({ ...requests, type: 'one-way' }); onOpenChange(true); }}
-                                className={`py-3 px-4 rounded-xl text-sm font-bold transition-all border-2 ${requests.type === 'one-way'
+                                disabled={isLoading}
+                                className={`py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 ${requests.type === 'one-way'
                                     ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
                                     : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'
-                                    }`}
+                                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                片道 / 目的地へ
+                                <div className="flex flex-col items-center gap-1 whitespace-nowrap">
+                                    <Navigation className={`w-5 h-5 ${requests.type === 'one-way' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                    片道（ゴール指定）
+                                </div>
                             </button>
                         </div>
 
-
-                        {/* Destination Toggle */}
-                        <div className={`overflow-hidden transition-all duration-300 ${requests.type === 'one-way' ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
-                            <label className="flex items-center gap-3 p-3 bg-white/50 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-50 transition-colors">
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${hasDestination ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
-                                    {hasDestination && <ChevronDown className="w-4 h-4 text-white" />}
-                                </div>
-                                <input
-                                    type="checkbox"
-                                    checked={hasDestination}
-                                    onChange={(e) => onToggleDestination(e.target.checked)}
-                                    className="hidden"
-                                />
-                                <span className={`text-sm font-bold ${hasDestination ? 'text-blue-700' : 'text-gray-500'}`}>目的地を指定する</span>
-                            </label>
-                        </div>
-                        {/* Pin Hint */}
-                        <div className="flex items-center justify-center gap-1 mt-1 mb-1 text-xs text-gray-400">
-                            <div className="flex gap-0.5">
-                                <MapPin className="w-3 h-3 text-blue-500" />
-                                <MapPin className="w-3 h-3 text-red-500" />
+                        {/* Destination Input (One-way only) */}
+                        <div className={`mt-4 overflow-hidden transition-all duration-300 ${requests.type === 'one-way' ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <div className="relative flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={hasDestination}
+                                            onChange={(e) => onToggleDestination(e.target.checked)}
+                                            disabled={isLoading}
+                                            className="peer sr-only"
+                                        />
+                                        <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-100 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-700">目的地を指定する</span>
+                                </label>
+                                <p className="mt-2 text-xs text-gray-400 ml-1">
+                                    {hasDestination
+                                        ? "地図上の赤いピンを動かして目的地を設定してください"
+                                        : "オフの場合、指定した距離でランダムな方向へ向かいます"}
+                                </p>
                             </div>
-                            <span>ピンをドラッグして地点を調整できます</span>
                         </div>
                     </div>
 
-
                     {/* Preferences */}
-                    <div>
-                        <label className="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2">
+                    <div className="mb-8">
+                        <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                             <Settings className="w-4 h-4 text-blue-500" />
                             優先条件
                         </label>
-                        <div className="flex flex-col gap-2">
-                            <div className="grid grid-cols-2 gap-2">
-                                {preferencesList.map((pref) => (
-                                    <label key={pref.key}
-                                        className={`
-                                            relative flex items-center gap-2 p-3 rounded-xl cursor-pointer transition-all border-2
-                                            ${requests.preferences[pref.key as keyof typeof requests.preferences]
-                                                ? `border-${pref.color}-500 bg-${pref.color}-50 shadow-md`
-                                                : 'border-gray-200 bg-white hover:bg-gray-50 text-gray-400 grayscale'}
-                                        `}
-                                    >
-                                        <div className={`
-                                            p-1.5 rounded-lg 
-                                            ${requests.preferences[pref.key as keyof typeof requests.preferences]
-                                                ? `bg-${pref.color}-500 text-white shadow-sm`
-                                                : 'bg-gray-100 text-gray-400'}
-                                        `}>
-                                            {pref.icon}
-                                        </div>
-                                        <span className={`text-xs font-bold ${requests.preferences[pref.key as keyof typeof requests.preferences] ? 'text-gray-800' : 'text-gray-500'}`}>
-                                            {pref.label}
-                                        </span>
-                                        <input
-                                            type="checkbox"
-                                            checked={!!requests.preferences[pref.key as keyof typeof requests.preferences]}
-                                            onChange={() => togglePreference(pref.key as keyof typeof requests.preferences)}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                ))}
-                            </div>
-
-                            <label className="flex items-center gap-3 p-3 mt-1 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${requests.avoidRepetition ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
-                                    {requests.avoidRepetition && <ChevronDown className="w-4 h-4 text-white" />}
-                                </div>
-                                <input
-                                    type="checkbox"
-                                    checked={requests.avoidRepetition}
-                                    onChange={(e) => onChange({ ...requests, avoidRepetition: e.target.checked })}
-                                    className="hidden"
-                                />
-                                <span className="text-xs text-gray-600 font-medium">できるだけ同じ道を通らない</span>
-                            </label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {preferencesList.map((pref) => (
+                                <button
+                                    key={pref.key}
+                                    onClick={() => togglePreference(pref.key as keyof typeof requests.preferences)}
+                                    disabled={isLoading}
+                                    className={`
+                                    flex items-center gap-2 p-3 rounded-xl border transition-all text-xs font-bold
+                                    ${requests.preferences[pref.key as keyof typeof requests.preferences]
+                                            ? `bg-blue-50 border-blue-200 text-blue-700 shadow-sm ring-1 ring-blue-100`
+                                            : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50 hover:border-gray-200'
+                                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                                `}
+                                >
+                                    <span className={`${requests.preferences[pref.key as keyof typeof requests.preferences] ? 'text-blue-500' : 'text-gray-400'}`}>
+                                        {pref.icon}
+                                    </span>
+                                    {pref.label}
+                                </button>
+                            ))}
                         </div>
+
+                        <label className="flex items-center gap-3 p-3 mt-1 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
+                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${requests.avoidRepetition ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
+                                {requests.avoidRepetition && <ChevronDown className="w-4 h-4 text-white" />}
+                            </div>
+                            <input
+                                type="checkbox"
+                                checked={requests.avoidRepetition}
+                                onChange={(e) => onChange({ ...requests, avoidRepetition: e.target.checked })}
+                                disabled={isLoading}
+                                className="hidden"
+                            />
+                            <span className="text-xs text-gray-600 font-medium">できるだけ同じ道を通らない</span>
+                        </label>
                     </div>
 
                     <div className="mt-4 mb-2">
@@ -245,11 +245,11 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                             'ルートを検索'
                         )}
                     </button>
-
                 </div>
-            </div >
+            </div>
         </>
     );
 };
 
 export default RoutePlanner;
+

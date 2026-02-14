@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { MapPin, Navigation as NavIcon, Settings, Crosshair } from 'lucide-react';
 
 import MapView from './components/Map/MapView';
 import RoutePlanner from './components/Controls/RoutePlanner';
@@ -54,6 +55,12 @@ function App() {
         },
         (error) => {
           console.error("Error getting location:", error);
+          showToast('現在地の取得に失敗しました', 'error');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
         }
       );
     }
@@ -441,6 +448,46 @@ function App() {
     handleGenerateRoute(newRequest);
   };
 
+  const handleCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      showToast('お使いのブラウザは位置情報をサポートしていません', 'error');
+      return;
+    }
+
+    setIsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setStartLocation({ lat: latitude, lng: longitude }); // Set the route's start point
+        setCurrentLocation({ lat: latitude, lng: longitude }); // Center the map on current location
+        showToast('現在地を取得しました', 'success');
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        let errorMessage = '現在地の取得に失敗しました';
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = '位置情報の利用が許可されていません。設定をご確認ください。';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = '位置情報を取得できませんでした。電波状況をご確認ください。';
+            break;
+          case error.TIMEOUT:
+            errorMessage = '位置情報の取得がタイムアウトしました。もう一度お試しください。';
+            break;
+        }
+        showToast(errorMessage, 'error');
+        setIsLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(true);
 
   return (
@@ -482,6 +529,21 @@ function App() {
           onOpenChange={setIsSettingsOpen}
         />
       </div>
+
+      {/* Current Location Button - Hidden during loading/generation */}
+      {!isLoading && (
+        <button
+          onClick={handleCurrentLocation}
+          className="absolute top-4 right-4 z-[1500] p-3 bg-white rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all md:top-8 md:right-8 group"
+          title="現在地へ移動"
+        >
+          {/* Assuming Crosshair is an imported icon component */}
+          {/* <Crosshair className={`w-6 h-6 text-gray-700 group-hover:text-blue-600 ${isLoading ? 'animate-pulse' : ''}`} /> */}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-700 group-hover:text-blue-600">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 12h2.25M17.25 12h2.25M12 9v6m3-3H9" />
+          </svg>
+        </button>
+      )}
 
       {generatedRoute && (
         <RouteDetails
