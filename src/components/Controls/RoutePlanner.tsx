@@ -73,9 +73,6 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                 fixed bottom-0 left-0 w-full z-[1000] rounded-t-3xl p-6
                 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 md:translate-y-0 md:opacity-100'}
             `}>
-                {/* Mobile Drag Handle */}
-                <div className="md:hidden w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" onClick={() => onOpenChange(false)} />
-
                 <div className="flex items-center justify-between mb-6 border-b border-gray-200/50 pb-4">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-100 rounded-lg">
