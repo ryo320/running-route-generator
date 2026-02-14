@@ -18,8 +18,8 @@ Error generating stack: `+l.message+`
                 /* Desktop Sizing */
                 md:w-full md:rounded-3xl md:p-6 md:relative md:transform-none md:opacity-100
                 
-                /* Mobile Sizing (Bottom Sheet) */
-                fixed bottom-0 left-0 w-full z-[1000] rounded-t-3xl p-6
+                /* Mobile Sizing (Full Screen) */
+                fixed inset-0 w-full h-full z-[1000] p-6 pt-12
                 ${I?"translate-y-0 opacity-100":"translate-y-[120%] opacity-0 md:translate-y-0 md:opacity-100"}
             `,children:[A.jsxs("div",{className:"flex items-center justify-between mb-6 border-b border-gray-200/50 pb-4",children:[A.jsxs("div",{className:"flex items-center gap-3",children:[A.jsx("div",{className:"p-2 bg-blue-100 rounded-lg",children:A.jsx(Hp,{className:"w-6 h-6 text-blue-600"})}),A.jsx("h1",{className:"text-3xl font-black italic tracking-tighter bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent transform -skew-x-12 pb-1",children:w("appTitle")})]}),A.jsx(eg,{})]}),A.jsxs("div",{className:"space-y-5 max-h-[70vh] md:max-h-none overflow-y-auto scrollbar-hide pb-20 md:pb-0 relative",children:[A.jsxs("div",{className:"px-4",children:[A.jsxs("div",{className:"flex justify-between items-end mb-4",children:[A.jsxs("label",{className:"text-sm font-semibold text-gray-600 flex items-center gap-2",children:[A.jsx(Ou,{className:"w-4 h-4 text-blue-500"}),w("targetDistance")]}),A.jsxs("span",{className:"text-3xl font-black text-blue-600 tracking-tight",children:[m.distance.toFixed(1),A.jsx("span",{className:"text-sm text-gray-400 font-medium ml-1",children:"km"})]})]}),A.jsx("style",{children:`
                             .range-slider::-webkit-slider-thumb {
