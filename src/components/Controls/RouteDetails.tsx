@@ -1,6 +1,8 @@
 import React from 'react';
 import type { Route } from '../../types';
-import { Navigation, TrendingUp, RefreshCw } from 'lucide-react';
+import { Navigation, TrendingUp, RefreshCw, Download } from 'lucide-react';
+import { detectTurnPoints } from '../../utils/geoUtils';
+import { downloadGPX } from '../../utils/gpxUtils';
 
 interface RouteDetailsProps {
     route: Route;
@@ -22,11 +24,15 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
         : false;
 
     const handleExportGoogleMaps = () => {
-        if (!route.waypoints || route.waypoints.length < 2) return;
+        if (!route.coordinates || route.coordinates.length < 2) return;
 
-        const origin = route.waypoints[0];
-        const destination = route.waypoints[route.waypoints.length - 1];
-        const waypoints = route.waypoints.slice(1, -1);
+        const origin = route.coordinates[0];
+        const destination = route.coordinates[route.coordinates.length - 1];
+
+        // Detect significant turns to use as waypoints.
+        // Google Maps URL has a limit (approx 10-15 waypoints + origin/dest).
+        // Use a higher threshold (60 degrees) to pick only major corners.
+        const waypoints = detectTurnPoints(route.coordinates, 9, 60);
 
         let url = `https://www.google.com/maps/dir/?api=1`;
         url += `&origin=${origin.lat},${origin.lng}`;
@@ -94,16 +100,27 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
                 )}
             </div>
 
-            <button
-                onClick={handleExportGoogleMaps}
-                className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95"
-            >
-                <Navigation className="w-5 h-5" />
-                Google Mapsで開く
-            </button>
-            <p className="text-xs text-center text-gray-400 mt-2">
-                ※ Google Maps側でルートが再計算される場合があります。
-            </p>
+            <div className="flex flex-col gap-3">
+                <button
+                    onClick={handleExportGoogleMaps}
+                    className="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95 text-lg"
+                >
+                    <Navigation className="w-6 h-6" />
+                    Google Mapsで開く
+                </button>
+                <button
+                    onClick={() => downloadGPX(route)}
+                    className="w-full py-3 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 text-sm"
+                    title="GPXファイルをダウンロード（GarminやStrava等への取込用）"
+                >
+                    <Download className="w-4 h-4" />
+                    Garmin・Strava等（GPX）
+                </button>
+            </div>
+            <div className="text-xs text-center text-gray-400 mt-2 space-y-1">
+                <p>※ Google Mapsはルートが再計算される場合があります。</p>
+                <p>※ 正確なルート再現には「Garmin・Strava等」をダウンロードし、各アプリに取り込んでください。</p>
+            </div>
         </div>
     );
 };

@@ -467,7 +467,7 @@ function App() {
         )}
       </div>
 
-      <div className="absolute top-4 left-4 z-10 w-full max-w-sm md:top-8 md:left-8 max-h-[90vh] overflow-y-auto pb-8 scrollbar-hide">
+      <div className="absolute top-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm md:top-8 md:left-8 max-h-[90vh] overflow-y-auto pb-8 scrollbar-hide">
         <RoutePlanner
           requests={routeRequest}
           onChange={setRouteRequest}

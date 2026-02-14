@@ -38,6 +38,63 @@ export const getRandomBearing = (): number => {
 };
 
 /**
+ * Calculates the bearing between two points.
+ */
+export const getBearing = (start: Coordinates, end: Coordinates): number => {
+    const startLat = toRad(start.lat);
+    const startLng = toRad(start.lng);
+    const endLat = toRad(end.lat);
+    const endLng = toRad(end.lng);
+    const dLng = endLng - startLng;
+
+    const y = Math.sin(dLng) * Math.cos(endLat);
+    const x = Math.cos(startLat) * Math.sin(endLat) -
+        Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLng);
+    const brng = toDeg(Math.atan2(y, x));
+    return (brng + 360) % 360;
+};
+
+/**
+ * Detects significant turn points from a list of coordinates.
+ * @param coordinates List of route coordinates
+ * @param maxPoints Maximum number of turn points to return
+ * @param turnThreshold Minimum angle change (degrees) to be considered a turn (default 30)
+ */
+export const detectTurnPoints = (coordinates: Coordinates[], maxPoints: number = 10, turnThreshold: number = 30): Coordinates[] => {
+    if (coordinates.length <= 2) return [];
+
+    const turns: { index: number; angle: number; coord: Coordinates }[] = [];
+
+    // Detect all turns > threshold
+    for (let i = 1; i < coordinates.length - 1; i++) {
+        const prev = coordinates[i - 1];
+        const curr = coordinates[i];
+        const next = coordinates[i + 1];
+
+        const bearing1 = getBearing(prev, curr);
+        const bearing2 = getBearing(curr, next);
+
+        let angleDiff = Math.abs(bearing1 - bearing2);
+        if (angleDiff > 180) angleDiff = 360 - angleDiff;
+
+        if (angleDiff > turnThreshold) {
+            turns.push({ index: i, angle: angleDiff, coord: curr });
+        }
+    }
+
+    // Sort by angle severity (descending) to pick key turns
+    turns.sort((a, b) => b.angle - a.angle);
+
+    // Select top candidates
+    const selectedTurns = turns.slice(0, maxPoints);
+
+    // Sort back by index to maintain route order
+    selectedTurns.sort((a, b) => a.index - b.index);
+
+    return selectedTurns.map(t => t.coord);
+};
+
+/**
  * Generates polygon waypoints for a loop route.
  * @param start Start coordinates
  * @param totalDistance Total desired distance in km
