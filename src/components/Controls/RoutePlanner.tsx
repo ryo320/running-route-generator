@@ -97,6 +97,31 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                 <span className="text-sm text-gray-400 font-medium ml-1">km</span>
                             </span>
                         </div>
+                        <style>{`
+                            .range-slider::-webkit-slider-thumb {
+                                -webkit-appearance: none;
+                                appearance: none;
+                                width: 20px;
+                                height: 20px;
+                                border-radius: 50%;
+                                background: white;
+                                border: 2px solid #2563eb;
+                                cursor: pointer;
+                                margin-top: -4px; /* Center thumb on track */
+                                box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+                                transition: transform 0.1s;
+                            }
+                            .range-slider::-webkit-slider-thumb:active {
+                                transform: scale(1.1);
+                            }
+                            .range-slider::-webkit-slider-runnable-track {
+                                width: 100%;
+                                height: 12px;
+                                cursor: pointer;
+                                border-radius: 9999px;
+                                /* Background is handled by inline style */
+                            }
+                        `}</style>
                         <input
                             type="range"
                             min="1.0"
@@ -108,7 +133,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                             style={{
                                 background: `linear-gradient(to right, #3b82f6 0%, #4f46e5 ${((requests.distance === 42.195 ? 42 : requests.distance) - 1) / (42 - 1) * 100}%, #e5e7eb ${((requests.distance === 42.195 ? 42 : requests.distance) - 1) / (42 - 1) * 100}%, #e5e7eb 100%)`
                             }}
-                            className={`w-full h-3 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 active:scale-[1.01] transition-transform touch-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`range-slider w-full h-3 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 touch-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         />
                         <div className="flex justify-between text-xs text-gray-400 mt-2 font-medium px-1">
                             <span>1.0 km</span>
