@@ -1,6 +1,8 @@
 import React from 'react';
 import { Settings, Map as MapIcon, RotateCw, Navigation, ChevronDown, Trees, Building2, Zap, VolumeX, Octagon, Activity, CornerUpRight } from 'lucide-react';
 import type { RouteRequest } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
+import LanguageToggle from '../UI/LanguageToggle';
 
 interface RoutePlannerProps {
     requests: Omit<RouteRequest, 'start'>;
@@ -15,7 +17,7 @@ interface RoutePlannerProps {
 }
 
 const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGenerate, isLoading, hasDestination, onToggleDestination, hasRoute, isOpen, onOpenChange }) => {
-
+    const { t } = useLanguage();
 
     const handleDistanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let val = parseFloat(e.target.value);
@@ -34,13 +36,13 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
     };
 
     const preferencesList = [
-        { key: 'scenery', label: '景観 (自然)', icon: <Trees className="w-4 h-4" />, color: 'blue' },
-        { key: 'urban', label: '景観 (都会)', icon: <Building2 className="w-4 h-4" />, color: 'blue' },
-        { key: 'safety', label: '安全 (街灯)', icon: <Zap className="w-4 h-4" />, color: 'blue' },
-        { key: 'quiet', label: '静か (交通量少)', icon: <VolumeX className="w-4 h-4" />, color: 'blue' },
-        { key: 'fewLights', label: '信号少なめ', icon: <Octagon className="w-4 h-4" />, color: 'blue' },
-        { key: 'flat', label: '平坦', icon: <Activity className="w-4 h-4" />, color: 'blue' },
-        { key: 'minimizeTurns', label: '曲がり角少なめ', icon: <CornerUpRight className="w-4 h-4" />, color: 'blue' },
+        { key: 'scenery', label: t('scenery'), icon: <Trees className="w-4 h-4" />, color: 'blue' },
+        { key: 'urban', label: t('urban'), icon: <Building2 className="w-4 h-4" />, color: 'blue' },
+        { key: 'safety', label: t('safety'), icon: <Zap className="w-4 h-4" />, color: 'blue' },
+        { key: 'quiet', label: t('quiet'), icon: <VolumeX className="w-4 h-4" />, color: 'blue' },
+        { key: 'fewLights', label: t('fewLights'), icon: <Octagon className="w-4 h-4" />, color: 'blue' },
+        { key: 'flat', label: t('flat'), icon: <Activity className="w-4 h-4" />, color: 'blue' },
+        { key: 'minimizeTurns', label: t('minimizeTurns'), icon: <CornerUpRight className="w-4 h-4" />, color: 'blue' },
     ];
 
     return (
@@ -73,13 +75,16 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                 {/* Mobile Drag Handle */}
                 <div className="md:hidden w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" onClick={() => onOpenChange(false)} />
 
-                <div className="flex items-center gap-3 mb-6 border-b border-gray-200/50 pb-4">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                        <MapIcon className="w-6 h-6 text-blue-600" />
+                <div className="flex items-center justify-between mb-6 border-b border-gray-200/50 pb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <MapIcon className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                            {t('appTitle')} <span className="text-sm font-medium text-gray-500">{t('appSubtitle')}</span>
+                        </h1>
                     </div>
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                        RunRoute <span className="text-sm font-medium text-gray-500">(ランルー)</span>
-                    </h1>
+                    <LanguageToggle />
                 </div>
 
                 <div className="space-y-5 max-h-[70vh] md:max-h-none overflow-y-auto scrollbar-hide pb-20 md:pb-0 relative">
@@ -90,7 +95,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                         <div className="flex justify-between items-end mb-4">
                             <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
                                 <Navigation className="w-4 h-4 text-blue-500" />
-                                目標距離
+                                {t('targetDistance')}
                             </label>
                             <span className="text-3xl font-black text-blue-600 tracking-tight">
                                 {requests.distance.toFixed(1)}
@@ -145,33 +150,33 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                     <div className="mb-8">
                         <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                             <Navigation className="w-4 h-4 text-blue-500" />
-                            ルートタイプ
+                            {t('routeType')}
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 onClick={() => onChange({ ...requests, type: 'loop' })}
                                 disabled={isLoading}
-                                className={`py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 ${requests.type === 'loop'
+                                className={`py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 h-auto ${requests.type === 'loop'
                                     ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
                                     : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'
                                     } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                <div className="flex flex-col items-center gap-1 whitespace-nowrap">
+                                <div className="flex flex-col items-center gap-1 whitespace-pre-line text-center leading-tight">
                                     <RotateCw className={`w-5 h-5 ${requests.type === 'loop' ? 'text-blue-600' : 'text-gray-400'}`} />
-                                    スタート地点に戻る
+                                    {t('loop')}
                                 </div>
                             </button>
                             <button
                                 onClick={() => { onChange({ ...requests, type: 'one-way' }); onOpenChange(true); }}
                                 disabled={isLoading}
-                                className={`py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 ${requests.type === 'one-way'
+                                className={`py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 h-auto ${requests.type === 'one-way'
                                     ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm'
                                     : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'
                                     } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                                <div className="flex flex-col items-center gap-1 whitespace-nowrap">
+                                <div className="flex flex-col items-center gap-1 whitespace-pre-line text-center leading-tight">
                                     <Navigation className={`w-5 h-5 ${requests.type === 'one-way' ? 'text-blue-600' : 'text-gray-400'}`} />
-                                    片道（ゴール指定）
+                                    {t('oneWay')}
                                 </div>
                             </button>
                         </div>
@@ -190,12 +195,12 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                         />
                                         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-100 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                     </div>
-                                    <span className="text-sm font-medium text-gray-700">目的地を指定する</span>
+                                    <span className="text-sm font-medium text-gray-700">{t('destination')}</span>
                                 </label>
                                 <p className="mt-2 text-xs text-gray-400 ml-1">
                                     {hasDestination
-                                        ? "地図上の赤いピンを動かして目的地を設定してください"
-                                        : "オフの場合、指定した距離でランダムな方向へ向かいます"}
+                                        ? t('destinationHintOn')
+                                        : t('destinationHintOff')}
                                 </p>
                             </div>
                         </div>
@@ -205,7 +210,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                     <div className="mb-8">
                         <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                             <Settings className="w-4 h-4 text-blue-500" />
-                            優先条件
+                            {t('preferences')}
                         </label>
                         <div className="grid grid-cols-2 gap-2">
                             {preferencesList.map((pref) => (
@@ -214,14 +219,14 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                     onClick={() => togglePreference(pref.key as keyof typeof requests.preferences)}
                                     disabled={isLoading}
                                     className={`
-                                    flex items-center gap-2 p-3 rounded-xl border transition-all text-xs font-bold
+                                    flex items-center gap-2 p-3 rounded-xl border transition-all text-xs font-bold text-left h-auto min-h-[44px] leading-tight
                                     ${requests.preferences[pref.key as keyof typeof requests.preferences]
                                             ? `bg-blue-50 border-blue-200 text-blue-700 shadow-sm ring-1 ring-blue-100`
                                             : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50 hover:border-gray-200'
                                         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
                                 `}
                                 >
-                                    <span className={`${requests.preferences[pref.key as keyof typeof requests.preferences] ? 'text-blue-500' : 'text-gray-400'}`}>
+                                    <span className={`shrink-0 ${requests.preferences[pref.key as keyof typeof requests.preferences] ? 'text-blue-500' : 'text-gray-400'}`}>
                                         {pref.icon}
                                     </span>
                                     {pref.label}
@@ -230,7 +235,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                         </div>
 
                         <label className="flex items-center gap-3 p-3 mt-1 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
-                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${requests.avoidRepetition ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
+                            <div className={`w-5 h-5 shrink-0 rounded border flex items-center justify-center transition-colors ${requests.avoidRepetition ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
                                 {requests.avoidRepetition && <ChevronDown className="w-4 h-4 text-white" />}
                             </div>
                             <input
@@ -240,13 +245,13 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                                 disabled={isLoading}
                                 className="hidden"
                             />
-                            <span className="text-xs text-gray-600 font-medium">できるだけ同じ道を通らない</span>
+                            <span className="text-xs text-gray-600 font-medium leading-tight">{t('avoidRepetition')}</span>
                         </label>
                     </div>
 
                     <div className="mt-4 mb-2">
                         <p className="text-[10px] text-gray-400 text-center">
-                            ※条件を増やしすぎると、希望の目標距離にならない場合があります
+                            {t('warningComplexity')}
                         </p>
                     </div>
 
@@ -264,10 +269,10 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                         {isLoading ? (
                             <span className="flex items-center justify-center gap-2">
                                 <RotateCw className="w-5 h-5 animate-spin" />
-                                ルート生成中...
+                                {t('searching')}
                             </span>
                         ) : (
-                            'ルートを検索'
+                            t('searchButton')
                         )}
                     </button>
                 </div>

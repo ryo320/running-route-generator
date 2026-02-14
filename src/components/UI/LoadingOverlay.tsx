@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface LoadingOverlayProps {
     message?: string;
@@ -137,7 +138,8 @@ const RunnerIcon = () => {
 };
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = () => {
-    const [currentMessage, setCurrentMessage] = useState("最適なルートを探しています...");
+    const { t } = useLanguage();
+    const [currentMessage, setCurrentMessage] = useState(t('loadingSearching'));
 
     // User Request: 
     // "Searching for optimal route..." -> First 65% of max time (approx 6.5s)
@@ -146,16 +148,16 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = () => {
 
     useEffect(() => {
         // Reset to initial
-        setCurrentMessage("最適なルートを探しています...");
+        setCurrentMessage(t('loadingSearching'));
 
         const switchTime = 10000 * 0.65; // 6500ms
 
         const timer = setTimeout(() => {
-            setCurrentMessage("地図データを取得中...");
+            setCurrentMessage(t('loadingMapData'));
         }, switchTime);
 
         return () => clearTimeout(timer);
-    }, []);
+    }, [t]);
 
     return (
         <div className="absolute inset-0 z-[500] bg-white/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
@@ -176,11 +178,6 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = () => {
                     <p className="text-gray-700 font-bold text-lg animate-pulse transition-all duration-300">
                         {currentMessage}
                     </p>
-                    <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
-                    </div>
                 </div>
             </div>
 

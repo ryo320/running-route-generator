@@ -11,8 +11,11 @@ import RouteDetails from './components/Controls/RouteDetails';
 import Toast from './components/UI/Toast';
 import type { ToastType } from './components/UI/Toast';
 import LoadingOverlay from './components/UI/LoadingOverlay';
+import { useLanguage } from './contexts/LanguageContext';
+
 
 function App() {
+  const { t } = useLanguage();
   const [currentLocation, setCurrentLocation] = useState<Coordinates>({ lat: 35.6895, lng: 139.6917 }); // Default Tokyo
   const [startLocation, setStartLocation] = useState<Coordinates | null>(null);
   const [destinationLocation, setDestinationLocation] = useState<Coordinates | null>(null);
@@ -54,7 +57,7 @@ function App() {
         },
         (error) => {
           console.error("Error getting location:", error);
-          showToast('現在地の取得に失敗しました', 'error');
+          showToast(t('locationError'), 'error');
         },
         {
           enableHighAccuracy: true,
@@ -63,7 +66,7 @@ function App() {
         }
       );
     }
-  }, []);
+  }, [t]);
 
   // Initialize destination if switching to One-way
   // Clear destination when switching to Loop
@@ -124,9 +127,9 @@ function App() {
         route.elevationGain = calculateElevationGain(elevations);
         route.turnCount = route.turnCount ?? 0;
         setGeneratedRoute(route);
-        showToast("ルートを作成しました！", 'success');
+        showToast(t('routeCreated'), 'success');
       } else {
-        showToast("ルートが見つかりませんでした。", 'error');
+        showToast(t('routeNotFound'), 'error');
       }
       setIsLoading(false);
       return;
@@ -405,17 +408,17 @@ function App() {
       if (bestRoute) {
         setGeneratedRoute(bestRoute);
         if (timedOut) {
-          showToast("検索時間を超過したため、現時点の最善ルートを表示します", 'info');
+          showToast(t('timeoutMessage'), 'info');
         } else {
-          showToast("ルートを生成しました", 'success');
+          showToast(t('routeCreated'), 'success');
         }
       } else {
-        showToast("ルートを生成できませんでした。条件を緩めて再試行してください。", 'error');
+        showToast(t('routeGenerationFailed'), 'error');
       }
 
     } catch (error) {
       console.error("Route generation failed:", error);
-      showToast("エラーが発生しました。", 'error');
+      showToast(t('unknownError'), 'error');
     } finally {
       setIsLoading(false);
     }
@@ -501,19 +504,19 @@ function App() {
           onStartDragEnd={handleStartDragEnd}
           onDestinationDragEnd={handleDestinationDragEnd}
         />
-
-        {/* Loading Overlay */}
-        {isLoading && <LoadingOverlay message="最適なランニングルートを探しています..." />}
-
-        {/* Toast Notification */}
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
-        )}
       </div>
+
+      {/* Loading Overlay */}
+      {isLoading && <LoadingOverlay message="最適なランニングルートを探しています..." />}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="absolute top-4 left-4 z-[2000] w-[calc(100%-2rem)] max-w-sm md:top-8 md:left-8 max-h-[90vh] overflow-y-auto pb-8 scrollbar-hide">
         <RoutePlanner
@@ -534,10 +537,8 @@ function App() {
         <button
           onClick={handleCurrentLocation}
           className="absolute top-4 right-4 z-[1500] p-3 bg-white rounded-full shadow-lg hover:bg-gray-50 active:scale-95 transition-all md:top-8 md:right-8 group"
-          title="現在地へ移動"
+          title="現在地へ移動" // TODO: Translate
         >
-          {/* Assuming Crosshair is an imported icon component */}
-          {/* <Crosshair className={`w-6 h-6 text-gray-700 group-hover:text-blue-600 ${isLoading ? 'animate-pulse' : ''}`} /> */}
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-700 group-hover:text-blue-600">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 12h2.25M17.25 12h2.25M12 9v6m3-3H9" />
           </svg>
