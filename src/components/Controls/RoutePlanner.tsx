@@ -18,6 +18,7 @@ interface RoutePlannerProps {
 
 const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGenerate, isLoading, hasDestination, onToggleDestination, hasRoute, isOpen, onOpenChange }) => {
     const { t } = useLanguage();
+    const [isPreferencesOpen, setIsPreferencesOpen] = React.useState(false);
 
     const handleDistanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let val = parseFloat(e.target.value);
@@ -80,8 +81,8 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                         <div className="p-2 bg-blue-100 rounded-lg">
                             <MapIcon className="w-6 h-6 text-blue-600" />
                         </div>
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                            {t('appTitle')} <span className="text-sm font-medium text-gray-500">{t('appSubtitle')}</span>
+                        <h1 className="text-3xl font-black italic tracking-tighter bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent transform -skew-x-12 pb-1">
+                            {t('appTitle')}
                         </h1>
                     </div>
                     <LanguageToggle />
@@ -207,46 +208,55 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                     </div>
 
                     {/* Preferences */}
-                    <div className="mb-8">
-                        <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                            <Settings className="w-4 h-4 text-blue-500" />
-                            {t('preferences')}
-                        </label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {preferencesList.map((pref) => (
-                                <button
-                                    key={pref.key}
-                                    onClick={() => togglePreference(pref.key as keyof typeof requests.preferences)}
-                                    disabled={isLoading}
-                                    className={`
-                                    flex items-center gap-2 p-3 rounded-xl border transition-all text-xs font-bold text-left h-auto min-h-[44px] leading-tight
-                                    ${requests.preferences[pref.key as keyof typeof requests.preferences]
-                                            ? `bg-blue-50 border-blue-200 text-blue-700 shadow-sm ring-1 ring-blue-100`
-                                            : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50 hover:border-gray-200'
-                                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                                `}
-                                >
-                                    <span className={`shrink-0 ${requests.preferences[pref.key as keyof typeof requests.preferences] ? 'text-blue-500' : 'text-gray-400'}`}>
-                                        {pref.icon}
-                                    </span>
-                                    {pref.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        <label className="flex items-center gap-3 p-3 mt-1 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
-                            <div className={`w-5 h-5 shrink-0 rounded border flex items-center justify-center transition-colors ${requests.avoidRepetition ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
-                                {requests.avoidRepetition && <ChevronDown className="w-4 h-4 text-white" />}
+                    <div className="mb-4">
+                        <button
+                            onClick={() => setIsPreferencesOpen(!isPreferencesOpen)}
+                            className="w-full flex items-center justify-between text-sm font-bold text-gray-700 mb-3"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Settings className="w-4 h-4 text-blue-500" />
+                                {t('preferences')}
                             </div>
-                            <input
-                                type="checkbox"
-                                checked={requests.avoidRepetition}
-                                onChange={(e) => onChange({ ...requests, avoidRepetition: e.target.checked })}
-                                disabled={isLoading}
-                                className="hidden"
-                            />
-                            <span className="text-xs text-gray-600 font-medium leading-tight">{t('avoidRepetition')}</span>
-                        </label>
+                            {isPreferencesOpen ? <ChevronDown className="w-5 h-5 text-gray-400 rotate-180 transition-transform" /> : <ChevronDown className="w-5 h-5 text-gray-400 transition-transform" />}
+                        </button>
+
+                        <div className={`transition-all duration-300 overflow-hidden ${isPreferencesOpen ? 'max-h-[500px] opacity-100 mb-4' : 'max-h-0 opacity-0'}`}>
+                            <div className="grid grid-cols-2 gap-2">
+                                {preferencesList.map((pref) => (
+                                    <button
+                                        key={pref.key}
+                                        onClick={() => togglePreference(pref.key as keyof typeof requests.preferences)}
+                                        disabled={isLoading}
+                                        className={`
+                                        flex items-center gap-2 p-3 rounded-xl border transition-all text-xs font-bold text-left h-auto min-h-[44px] leading-tight
+                                        ${requests.preferences[pref.key as keyof typeof requests.preferences]
+                                                ? `bg-blue-50 border-blue-200 text-blue-700 shadow-sm ring-1 ring-blue-100`
+                                                : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50 hover:border-gray-200'
+                                            } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                                    `}
+                                    >
+                                        <span className={`shrink-0 ${requests.preferences[pref.key as keyof typeof requests.preferences] ? 'text-blue-500' : 'text-gray-400'}`}>
+                                            {pref.icon}
+                                        </span>
+                                        {pref.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <label className="flex items-center gap-3 p-3 mt-1 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div className={`w-5 h-5 shrink-0 rounded border flex items-center justify-center transition-colors ${requests.avoidRepetition ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
+                                    {requests.avoidRepetition && <ChevronDown className="w-4 h-4 text-white" />}
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    checked={requests.avoidRepetition}
+                                    onChange={(e) => onChange({ ...requests, avoidRepetition: e.target.checked })}
+                                    disabled={isLoading}
+                                    className="hidden"
+                                />
+                                <span className="text-xs text-gray-600 font-medium leading-tight">{t('avoidRepetition')}</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div className="mt-4 mb-2">

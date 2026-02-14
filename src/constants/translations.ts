@@ -3,7 +3,6 @@ export type Language = 'ja' | 'en';
 export const translations = {
     ja: {
         appTitle: 'RunAnyWay',
-        appSubtitle: '',
         metaDescription: '「いつも同じ道ばかり走っている」「どこを走ればいいかわからない」そんなランナーへ。RunAnyWayは希望の距離と場所を指定するだけで、最適なランニングコースを自動生成します。未知なる道へ、走り出しましょう。',
 
         // RoutePlanner
@@ -30,7 +29,7 @@ export const translations = {
         // RouteDetails
         routeDetails: 'ルート詳細',
         distanceMismatch: '⚠️ 距離が一致しませんでした',
-        distanceMismatchDesc: '生成ルート ({distance}km) が目標 ({target}km) と異なります。条件が厳しすぎる可能性があります。',
+        distanceMismatchDesc: '再検索か条件を変えて検索してください。',
         retrySameSettings: '同じ条件で再検索',
         retrySameDistance: '距離固定で再検索',
         totalDistance: '総距離',

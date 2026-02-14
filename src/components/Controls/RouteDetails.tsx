@@ -26,9 +26,9 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
     const [dragOffset, setDragOffset] = useState(0);
     const [sheetHeight, setSheetHeight] = useState(0);
 
-    // Check if distance error is significant (> 1km or > 15%)
+    // Check if distance error is significant (> 1.5km or > 20%)
     const isApproximate = targetDistance
-        ? Math.abs(route.distance - targetDistance) > Math.max(1.0, targetDistance * 0.15)
+        ? Math.abs(route.distance - targetDistance) > Math.max(1.5, targetDistance * 0.2)
         : false;
 
     const sheetRef = useRef<HTMLDivElement>(null);
@@ -50,15 +50,12 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
 
     const handleTouchStart = (e: React.TouchEvent) => {
         e.stopPropagation();
-        // e.preventDefault(); // Warning: React might complain about passive events if not careful, but usually okay in handler if simple.
         isDragging.current = true;
         startY.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
         e.stopPropagation();
-        // e.preventDefault() is often needed to stop scrolling, but in React 18+ passive is default.
-        // We rely on CSS touch-action: none for the handle.
         if (!isDragging.current || startY.current === null) return;
         const deltaY = e.touches[0].clientY - startY.current;
         setDragOffset(deltaY);
@@ -118,7 +115,7 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
         <div
             ref={sheetRef}
             className={`
-                bg-white/95 backdrop-blur-md p-6 shadow-2xl border border-white/20 
+                bg-white/95 backdrop-blur-md p-6 shadow-2xl border border-white/20 touch-none 
                 
                 /* Desktop: Absolute card in top-right */
                 md:absolute md:top-8 md:right-8 md:w-80 md:rounded-2xl md:transform-none md:inset-auto md:h-auto md:max-h-none md:overflow-visible
@@ -134,15 +131,15 @@ const RouteDetails: React.FC<RouteDetailsProps> = ({
                     : `translateY(${totalTranslate}px)`,
                 transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
         >
             {/* Header Section (Visible when collapsed) */}
             <div ref={headerRef}>
                 {/* Handle Bar Area */}
                 <div
                     className="md:hidden w-full h-8 -mt-6 mb-2 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
                 >
                     <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
                 </div>

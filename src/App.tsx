@@ -112,7 +112,7 @@ function App() {
     let minError = Infinity;
     const startTime = Date.now();
     const CALCULATION_TIMEOUT_MS = 10000; // 10 seconds
-    let timedOut = false;
+
 
     // Use Manual Start if set
     const effectiveStart = startLocation || currentLocation;
@@ -127,7 +127,7 @@ function App() {
         route.elevationGain = calculateElevationGain(elevations);
         route.turnCount = route.turnCount ?? 0;
         setGeneratedRoute(route);
-        showToast(t('routeCreated'), 'success');
+
       } else {
         showToast(t('routeNotFound'), 'error');
       }
@@ -143,7 +143,7 @@ function App() {
         // Check timeout
         if (Date.now() - startTime > CALCULATION_TIMEOUT_MS) {
           console.log("Calculation timed out. Returning best route found so far.");
-          timedOut = true;
+
           break;
         }
 
@@ -407,11 +407,7 @@ function App() {
 
       if (bestRoute) {
         setGeneratedRoute(bestRoute);
-        if (timedOut) {
-          showToast(t('timeoutMessage'), 'info');
-        } else {
-          showToast(t('routeCreated'), 'success');
-        }
+
       } else {
         showToast(t('routeGenerationFailed'), 'error');
       }
