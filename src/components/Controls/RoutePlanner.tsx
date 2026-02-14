@@ -74,7 +74,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
                     </h1>
                 </div>
 
-                <div className="space-y-8 max-h-[70vh] md:max-h-none overflow-y-auto scrollbar-hide pb-20 md:pb-0 relative">
+                <div className="space-y-5 max-h-[70vh] md:max-h-none overflow-y-auto scrollbar-hide pb-20 md:pb-0 relative">
 
 
                     {/* Distance Slider */}

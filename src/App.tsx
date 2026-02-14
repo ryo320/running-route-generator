@@ -476,15 +476,16 @@ function App() {
           hasDestination={!!destinationLocation}
           onToggleDestination={handleToggleDestination}
         />
-        {generatedRoute && (
-          <RouteDetails
-            route={generatedRoute}
-            targetDistance={routeRequest.distance}
-            onRetrySameSettings={handleRetrySameSettings}
-            onRetrySameDistance={handleRetrySameDistance}
-          />
-        )}
       </div>
+
+      {generatedRoute && (
+        <RouteDetails
+          route={generatedRoute}
+          targetDistance={routeRequest.distance}
+          onRetrySameSettings={handleRetrySameSettings}
+          onRetrySameDistance={handleRetrySameDistance}
+        />
+      )}
     </div>
   )
 }

@@ -136,23 +136,64 @@ const RunnerIcon = () => {
     );
 };
 
-const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message = "Loading..." }) => {
+const LoadingOverlay: React.FC<LoadingOverlayProps> = () => {
+    const [currentMessage, setCurrentMessage] = useState("最適なルートを探しています...");
+
+    // User Request: 
+    // "Searching for optimal route..." -> First 65% of max time (approx 6.5s)
+    // "Acquiring map data..." -> Remaining 35% (approx 3.5s)
+    // Total timeout is 10000ms.
+
+    useEffect(() => {
+        // Reset to initial
+        setCurrentMessage("最適なルートを探しています...");
+
+        const switchTime = 10000 * 0.65; // 6500ms
+
+        const timer = setTimeout(() => {
+            setCurrentMessage("地図データを取得中...");
+        }, switchTime);
+
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <div className="absolute inset-0 z-[500] bg-white/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
-            <div className="flex flex-col items-center gap-6">
-                <div className="relative flex flex-col items-center pt-8">
+            <div className="flex flex-col items-center gap-8">
+                <div className="relative flex flex-col items-center pt-8 scale-125">
                     <RunnerIcon />
 
-                    <div className="w-48 h-8 relative overflow-hidden mt-6 opacity-40">
-                        <div className="absolute top-2 w-[200%] h-1 bg-blue-500 rounded-full animate-ground-flow" style={{ animationDuration: '0.35s' }}></div>
-                        <div className="absolute top-6 w-[200%] h-1 bg-blue-400 rounded-full animate-ground-flow" style={{ animationDuration: '0.5s', left: '-50%' }}></div>
+                    {/* Speed Lines / Ground Effect */}
+                    <div className="w-64 h-12 relative overflow-hidden mt-4 opacity-30 mask-linear-fade">
+                        <div className="absolute top-2 w-[50%] h-0.5 bg-blue-400 rounded-full animate-ground-flow-fast" style={{ animationDelay: '0s' }}></div>
+                        <div className="absolute top-4 w-[30%] h-0.5 bg-blue-300 rounded-full animate-ground-flow-fast" style={{ left: '20%', animationDelay: '0.2s' }}></div>
+                        <div className="absolute top-6 w-[70%] h-0.5 bg-blue-500 rounded-full animate-ground-flow-fast" style={{ left: '50%', animationDelay: '0.1s' }}></div>
+                        <div className="absolute top-8 w-[40%] h-0.5 bg-blue-400 rounded-full animate-ground-flow-fast" style={{ left: '80%', animationDelay: '0.3s' }}></div>
                     </div>
                 </div>
 
-                <p className="text-blue-600 font-bold italic tracking-widest uppercase animate-pulse text-lg">
-                    {message}
-                </p>
+                <div className="flex flex-col items-center gap-2 h-16">
+                    <p className="text-gray-700 font-bold text-lg animate-pulse transition-all duration-300">
+                        {currentMessage}
+                    </p>
+                    <div className="flex gap-1">
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                    </div>
+                </div>
             </div>
+
+            {/* CSS for custom animation if not in Tailwind config */}
+            <style>{`
+                @keyframes ground-flow-fast {
+                    from { transform: translateX(200%); }
+                    to { transform: translateX(-200%); }
+                }
+                .animate-ground-flow-fast {
+                    animation: ground-flow-fast 0.6s linear infinite;
+                }
+            `}</style>
         </div>
     );
 };
