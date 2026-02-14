@@ -86,7 +86,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({ requests, onChange, onGener
 
 
                     {/* Distance Slider */}
-                    <div className="px-2">
+                    <div className="px-4">
                         <div className="flex justify-between items-end mb-4">
                             <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
                                 <Navigation className="w-4 h-4 text-blue-500" />
